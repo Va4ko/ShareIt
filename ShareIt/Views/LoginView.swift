@@ -6,15 +6,19 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct LoginView: View {
     
-    @State private var username: String = ""
+    @EnvironmentObject var viewModel: AuthViewModel
+    
+    @State private var email: String = ""
     @State private var password: String = ""
     @State private var isEditing = false
+    @State private var showRegistrationView = false
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             ZStack {
                 
                 VStack {
@@ -25,12 +29,13 @@ struct LoginView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 150, height: 150)
+                        .padding(.top, 50)
                     
                     VStack(spacing: 20) {
                         
                         Spacer()
                         
-                        CustomTextField(text: $username, placeHolder: Text("Email"), imageName: "envelope")
+                        CustomTextField(text: $email, placeHolder: Text("Email"), imageName: "envelope")
                             .padding()
                             .background(Color(.init(white: 1, alpha: 0.15)))
                             .cornerRadius(10)
@@ -59,9 +64,10 @@ struct LoginView: View {
                             })
                     }
                     
-                    NavigationLink(
-                        destination: MainView()) {
-                        Text("Press")
+                    Button(action: {
+                        viewModel.logIn(withEmail: email, password: password)
+                    }, label: {
+                        Text("Sign In")
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(width: 300, height: 50)
@@ -69,24 +75,33 @@ struct LoginView: View {
                             .clipShape(Capsule())
                             .padding(.top)
                             .padding(.horizontal)
-                    }
+                    })
                     
                     Spacer()
                     
-                    NavigationLink(
-                        destination: MainView(),
-                        label: {
-                            HStack {
-                                Text("Don`t have an account?")
-                                    .font(.system(size: 14))
-                                
-                                Text("Sign Up")
-                                    .font(.system(size: 14, weight: .semibold))
-                            }.foregroundColor(.white)
-                        }).padding(.bottom, 16)
+//                    NavigationLink(
+//                        destination: RegistrationView(),
+//                        label: {
+//                            HStack {
+//                                Text("Don`t have an account?")
+//                                    .font(.system(size: 14))
+//
+//                                Text("Sign Up")
+//                                    .font(.system(size: 14, weight: .semibold))
+//                            }.foregroundColor(.white)
+//                        }).padding(.bottom, 16)
+                    Button("Don`t have an account? Sign Up") {
+                        showRegistrationView = true
+                    }
+                    .font(.system(size: 14))
+                    .foregroundColor(.white)
+                    .sheet(isPresented: $showRegistrationView) {
+                        RegistrationView(isPresented: $showRegistrationView)
+                    }
+                    .padding(.bottom, 16)
                     
                 }
-                .padding(.top, -50)
+//                .padding(.top, -50)
             }
             .background(
                 Image("ShareItBG")
@@ -95,16 +110,14 @@ struct LoginView: View {
                     .ignoresSafeArea()
             )
             
-        }
+//        }
         .gesture(
             TapGesture()
                 .onEnded { _ in
                     UIApplication.shared.endEditing()
                 }
         )
-        .onAppear {
-            UserDefaults.standard.setValue("No", forKey: "isFirstOpenning")
-        }
+        
     }
 }
 

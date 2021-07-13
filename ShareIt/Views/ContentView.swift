@@ -9,18 +9,22 @@ import SwiftUI
 
 struct ContentView: View {
     
+    @EnvironmentObject var viewModel: AuthViewModel
+    @StateObject var locationViewModel = MainViewModel()
+    
     private let defaults = UserDefaults.standard
     
     var body: some View {
-        
-//        if defaults.object(forKey: "isFirstOpenning") == nil {
-            LoginView()
-//        } else {
-//            MainView()
-//        }
-        
+        Group {
+            if defaults.object(forKey: "isFirstOpenning") == nil {
+                VeryFirstView()
+            } else if viewModel.userSession == nil {
+                LoginView()
+            } else {
+                MainView()
+            }
+        }
     }
-    
 }
 
 //struct ContentView_Previews: PreviewProvider {

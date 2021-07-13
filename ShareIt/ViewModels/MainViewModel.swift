@@ -37,7 +37,8 @@ class MainViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         lastSeenLocation = locations.first
-        fetchCountryAndCity(for: locations.first)
+        fetchCountryAndCity(for: lastSeenLocation)
+        locationManager.stopUpdatingLocation()
     }
     
     func fetchCountryAndCity(for location: CLLocation?) {

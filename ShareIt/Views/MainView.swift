@@ -10,26 +10,95 @@ import CoreLocation
 
 struct MainView: View {
     @StateObject var locationViewModel = MainViewModel()
+    @EnvironmentObject var viewModel: AuthViewModel
+    
+    @State var showMenu = false
     
     var body: some View {
-        NavigationView {
+        
+        let drag = DragGesture()
+            .onEnded {
+                if $0.translation.width < -100 {
+                    withAnimation {
+                        showMenu = false
+                    }
+                }
+            }
+        
+        return NavigationView {
             switch locationViewModel.authorizationStatus {
             case .notDetermined:
                 AnyView(RequestLocationView())
-//                    .onAppear {
-//                        locationViewModel.requestPermission()
-//                    }
+            //                    .onAppear {
+            //                        locationViewModel.requestPermission()
+            //                    }
             case .restricted:
                 ErrorView(errorText: "Location use is restricted.")
             case .denied:
                 ErrorView(errorText: "The app does not have location permissions. Please enable them in settings.")
             case .authorizedAlways, .authorizedWhenInUse:
-                TrackingView()
-                    .environmentObject(locationViewModel)
+                ZStack(alignment: .leading) {
+                    TrackingView(showMenu: $showMenu)
+                        .environmentObject(locationViewModel)
+                        .offset(x: showMenu ? UIScreen.main.bounds.width / 2 : 0)
+                        .disabled(showMenu ? true : false)
+                    if showMenu {
+                        SideBarView()
+                            .frame(width: UIScreen.main.bounds.width / 2)
+                            .transition(.move(edge: .leading))
+                    }
+                }
+                .gesture(drag)
+                .navigationBarTitle("Main view", displayMode: .inline)
+//                .navigationBarItems(leading: (
+//                    Button(action: {
+//                        withAnimation {
+//                            showMenu.toggle()
+//                        }
+//                    }) {
+//                        Image(systemName: "line.horizontal.3")
+//                            .imageScale(.large)
+//                    }
+//                ))
+//                .navigationBarItems(trailing: (
+//                    Button {
+//                        viewModel.signOut()
+//                    } label: {
+//                        Text("Logout")
+//                    }
+//                ))
+                .navigationBarItems(leading: (
+                    Button(action: {
+                        withAnimation {
+                            showMenu.toggle()
+                        }
+                    }) {
+                        Image(systemName: "line.horizontal.3")
+                            .imageScale(.large)
+                    }
+                ), trailing: (
+                    Button {
+                        viewModel.signOut()
+                    } label: {
+                        Text("Logout")
+                    }
+                ))
             default:
                 Text("Unexpected status")
+                
             }
         }
+        //        .navigationBarTitle("Main view", displayMode: .inline)
+        //        .navigationBarItems(leading: (
+        //            Button(action: {
+        //                withAnimation: do {
+        //                    showMenu.toggle()
+        //                }
+        //            }) {
+        //                Image(systemName: "line.horizontal.3")
+        //                    .imageScale(.large)
+        //            }
+        //        ))
     }
     
 }
@@ -83,10 +152,20 @@ struct ErrorView: View {
 
 struct TrackingView: View {
     @EnvironmentObject var locationViewModel: MainViewModel
+    @EnvironmentObject var viewModel: AuthViewModel
     
+    @Binding var showMenu: Bool
     
     var body: some View {
         VStack {
+//            Button {
+//                viewModel.signOut()
+//            } label: {
+//                Text("Logout")
+//            }
+            
+            //            Text("Logged as \((viewModel.userSession?.email)!)")
+            
             VStack {
                 PairView(
                     leftText: "Latitude:",
@@ -97,25 +176,25 @@ struct TrackingView: View {
                     rightText: String(coordinate?.longitude ?? 0)
                 )
                 PairView(
-                    leftText: "Altitude",
+                    leftText: "Altitude:",
                     rightText: String(locationViewModel.lastSeenLocation?.altitude ?? 0)
                 )
                 PairView(
-                    leftText: "Speed",
+                    leftText: "Speed:",
                     rightText: String(locationViewModel.lastSeenLocation?.speed ?? 0)
                 )
                 PairView(
-                    leftText: "Country",
+                    leftText: "Country:",
                     rightText: locationViewModel.currentPlacemark?.country ?? ""
                 )
-                PairView(leftText: "City", rightText: locationViewModel.currentPlacemark?.administrativeArea ?? ""
+                PairView(leftText: "City:", rightText: locationViewModel.currentPlacemark?.administrativeArea ?? ""
                 )
                 PairView(
-                    leftText: "Kvartal",
+                    leftText: "Neighborhood:",
                     rightText: locationViewModel.currentPlacemark?.subLocality ?? ""
                 )
                 PairView(
-                    leftText: "Street",
+                    leftText: "Street:",
                     rightText: locationViewModel.currentPlacemark?.thoroughfare ?? ""
                 )
             }
