@@ -21,7 +21,8 @@ struct ContentView: View {
             } else if viewModel.userSession == nil {
                 LoginView()
             } else {
-                MainView()
+//                MainView()
+                LocationDetailsView()
             }
         }
     }

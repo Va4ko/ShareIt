@@ -38,13 +38,14 @@ class MainViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         lastSeenLocation = locations.first
         fetchCountryAndCity(for: lastSeenLocation)
-        locationManager.stopUpdatingLocation()
+//        locationManager.stopUpdatingLocation()
     }
     
     func fetchCountryAndCity(for location: CLLocation?) {
         guard let location = location else { return }
         let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+//        let locale = Locale(identifier: "bg-BG")
+        geocoder.reverseGeocodeLocation(location, preferredLocale: nil) { (placemarks, error) in
             self.currentPlacemark = placemarks?.first
         }
     }

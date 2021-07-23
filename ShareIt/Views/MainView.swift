@@ -29,9 +29,6 @@ struct MainView: View {
             switch locationViewModel.authorizationStatus {
             case .notDetermined:
                 AnyView(RequestLocationView())
-            //                    .onAppear {
-            //                        locationViewModel.requestPermission()
-            //                    }
             case .restricted:
                 ErrorView(errorText: "Location use is restricted.")
             case .denied:
@@ -50,23 +47,6 @@ struct MainView: View {
                 }
                 .gesture(drag)
                 .navigationBarTitle("Main view", displayMode: .inline)
-//                .navigationBarItems(leading: (
-//                    Button(action: {
-//                        withAnimation {
-//                            showMenu.toggle()
-//                        }
-//                    }) {
-//                        Image(systemName: "line.horizontal.3")
-//                            .imageScale(.large)
-//                    }
-//                ))
-//                .navigationBarItems(trailing: (
-//                    Button {
-//                        viewModel.signOut()
-//                    } label: {
-//                        Text("Logout")
-//                    }
-//                ))
                 .navigationBarItems(leading: (
                     Button(action: {
                         withAnimation {
@@ -88,17 +68,6 @@ struct MainView: View {
                 
             }
         }
-        //        .navigationBarTitle("Main view", displayMode: .inline)
-        //        .navigationBarItems(leading: (
-        //            Button(action: {
-        //                withAnimation: do {
-        //                    showMenu.toggle()
-        //                }
-        //            }) {
-        //                Image(systemName: "line.horizontal.3")
-        //                    .imageScale(.large)
-        //            }
-        //        ))
     }
     
 }
@@ -156,17 +125,14 @@ struct TrackingView: View {
     
     @Binding var showMenu: Bool
     
+//    @State privte var location
+    
     var body: some View {
-        VStack {
-//            Button {
-//                viewModel.signOut()
-//            } label: {
-//                Text("Logout")
-//            }
-            
-            //            Text("Logged as \((viewModel.userSession?.email)!)")
-            
+        ZStack {
             VStack {
+                
+//                CustomTextField(text: <#T##Binding<String>#>, placeHolder: Text ("Tap to enter location manually"), imageName: <#T##String#>)
+                
                 PairView(
                     leftText: "Latitude:",
                     rightText: String(coordinate?.latitude ?? 0)
@@ -200,6 +166,12 @@ struct TrackingView: View {
             }
             .padding()
         }
+        .background(
+            Image("ShareItBG")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+        )
     }
     
     var coordinate: CLLocationCoordinate2D? {

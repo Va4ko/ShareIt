@@ -32,6 +32,7 @@ struct CustomTextField: View {
                     .onTapGesture {
                         self.text = ""
                     }
+                    .padding(.leading, 10)
             }
         }
     }
